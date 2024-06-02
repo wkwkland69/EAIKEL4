@@ -50,5 +50,4 @@ class Project extends Model
         }
     }
 
-    // Sesuaikan method lainnya dengan penambahan user_id
 }
