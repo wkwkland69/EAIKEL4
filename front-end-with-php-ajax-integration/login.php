@@ -9,7 +9,7 @@
     <title>
         Soft UI Dashboard by Creative Tim
     </title>
-    <!--     Fonts and icons     -->
+    <!-- Fonts and icons -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
     <!-- Nucleo Icons -->
     <link href="assets/css/nucleo-icons.css" rel="stylesheet" />
@@ -22,7 +22,7 @@
     <link href="assets/css/toastr.css" rel="stylesheet" />
 </head>
 
-<body class="g-sidenav-show  bg-gray-100">
+<body class="g-sidenav-show bg-gray-100">
 <section class="min-vh-100 mb-8">
     <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg" style="background-image: url('assets/img/curved-images/curved14.jpg');">
         <span class="mask bg-gradient-dark opacity-6"></span>
@@ -43,12 +43,12 @@
                         <h5>Login</h5>
                     </div>
                     <div class="card-body">
-                        <form id="login">
+                        <form id="login-form">
                             <div class="mb-3">
-                                <input type="text" class="form-control" placeholder="Email ID" name="email">
+                                <input type="text" class="form-control" placeholder="Email ID" name="email" required>
                             </div>
                             <div class="mb-3">
-                                <input type="password" class="form-control" placeholder="Password" name="password">
+                                <input type="password" class="form-control" placeholder="Password" name="password" required>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Login Now</button>
@@ -63,8 +63,41 @@
 </section>
 <script src="assets/js/plugins/jquery.js"></script>
 <script src="assets/js/plugins/toastr.min.js"></script>
-<script src="assets/js/custom/dashboard-client.js"></script>
-<script src="assets/js/custom/login.js"></script>
+<script>
+$(document).ready(function() {
+    $('#login-form').on('submit', function(event) {
+        event.preventDefault();
+
+        var email = $('input[name="email"]').val();
+        var password = $('input[name="password"]').val();
+
+        $.ajax({
+            url: '/api/auth/login', // Pastikan ini adalah URL API login yang benar
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                email: email,
+                password: password
+            }),
+            success: function(response) {
+                if(response.status) {
+                    toastr.success('Login successful!');
+                    // Simpan token JWT di localStorage atau sessionStorage
+                    localStorage.setItem('token', response.token);
+                    // Redirect ke halaman dashboard atau halaman lain yang diinginkan
+                    window.location.href = '/dashboard';
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function(xhr) {
+                var error = JSON.parse(xhr.responseText);
+                toastr.error(error.message || 'Something went wrong!');
+            }
+        });
+    });
+});
+</script>
 </body>
 
 </html>
